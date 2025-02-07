@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import {
   ConnectButton,
@@ -45,7 +46,6 @@ interface GameResult {
 }
 
 export default function RockPaperScissors() {
-    
   const account = useActiveAccount();
   const { disconnect } = useDisconnect();
   const wallet = useActiveWallet();
@@ -84,44 +84,9 @@ export default function RockPaperScissors() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-        backgroundColor: "#f0f0f0",
-        color: "#333",
-      }}
-    >
-      <div
-        style={{
-          padding: "2rem",
-          margin: "0 0.5rem",
-          width: "400px",
-          maxWidth: "98%",
-          height: "400px",
-          backgroundColor: "white",
-          borderRadius: "8px",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          position: "relative",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            marginBottom: "2rem",
-            textAlign: "center",
-          }}
-        >
-          Mini Game
-        </h1>
+    <div className="flex justify-center items-center h-screen w-screen bg-gray-200 text-gray-800">
+      <div className="p-8 mx-2 w-[400px] max-w-[98%] h-[400px] bg-white rounded-lg shadow-md flex flex-col items-center justify-start relative">
+        <h1 className="text-2xl font-bold mb-8 text-center">Mini Game</h1>
         {!account ? (
           <ConnectButton
             client={client}
@@ -139,44 +104,16 @@ export default function RockPaperScissors() {
           />
         ) : (
           <>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                height: "auto",
-                width: "100%",
-                gap: "0.5rem",
-                alignItems: "center",
-                justifyContent: "space-between",
-                border: "1px solid #f0f0f0",
-                padding: "0.5rem",
-              }}
-            >
+            <div className="flex flex-row h-auto w-full gap-2 items-center justify-between border border-gray-200 p-2">
               <div>
-                <p
-                >
-                  {shortenAddress(account.address)}
-                </p>
-                <p
-                  style={{
-                    fontSize: "0.75rem",
-                    marginBottom: "-10px",
-                  }}
-                >
+                <p>{shortenAddress(account.address)}</p>
+                <p className="text-xs mb-[-10px]">
                   Balance: {tokenbalance?.displayValue}
                 </p>
               </div>
               <button
                 onClick={() => disconnect(wallet!)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  background: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "0.75rem",
-                }}
+                className="px-4 py-2 bg-red-600 text-white border-none rounded cursor-pointer text-xs hover:bg-red-700"
               >
                 Logout
               </button>
@@ -184,27 +121,12 @@ export default function RockPaperScissors() {
             {!result ? (
               <div>
                 <h3>Choose your option:</h3>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "0.5rem",
-                    margin: "2rem",
-                  }}
-                >
+                <div className="flex justify-center gap-2 m-8">
                   {choices.map((choice) => (
                     <button
                       key={choice}
                       onClick={() => handleChoice(choice)}
-                      style={{
-                        padding: "0.5rem 1rem",
-                        background: "#007bff",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "3rem",
-                      }}
+                      className="px-4 py-2 bg-blue-600 text-white border-none rounded cursor-pointer text-5xl"
                     >
                       {choice === "Rock"
                         ? "🪨"
@@ -216,89 +138,39 @@ export default function RockPaperScissors() {
                 </div>
               </div>
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <p style={{ fontSize: "1.5rem", marginBottom: "-10px" }}>
+              <div className="flex flex-col items-center">
+                <p className="text-2xl mb-[10px]">
                   You chose: {result.playerChoice}
                 </p>
-                <p style={{ fontSize: "1.5rem", marginBottom: "-20px" }}>
+                <p className="text-2xl mb-[20px]">
                   Computer chose: {result.computerChoice}
                 </p>
-                <p style={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <p className="font-bold text-3xl">
                   Result: {result.gameResult}
                 </p>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "2rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
-                    alignItems: "center",
-                  }}
-                >
+
+                <div className="absolute bottom-8 flex flex-col gap-4 items-center">
                   <button
                     onClick={resetGame}
-                    style={{
-                      padding: "0.5rem 1rem",
-                      background: "#28a745",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
+                    className="px-4 py-2 bg-green-600 text-white border-none rounded cursor-pointer"
                   >
                     Try Again
                   </button>
+
                   {showPrize && !prizeClaimed && (
                     <button
                       onClick={claimPrize}
-                      style={{
-                        padding: "0.5rem 1rem",
-                        background: "#ffc107",
-                        color: "black",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
+                      className="px-4 py-2 bg-yellow-400 text-black border-none rounded cursor-pointer"
                     >
                       Claim Prize
                     </button>
                   )}
+
                   {showModal && (
-                    <div
-                      style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div
-                        style={{
-                          background: "white",
-                          padding: "2rem",
-                          borderRadius: "8px",
-                          maxWidth: "300px",
-                          textAlign: "center",
-                        }}
-                      >
-                        <h2
-                          style={{ fontSize: "1.2rem", marginBottom: "1rem" }}
-                        >
-                          Claim 10 Tokens!
-                        </h2>
-                        <p style={{ marginBottom: "1rem" }}>
+                    <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 flex justify-center items-center">
+                      <div className="bg-white p-8 rounded-lg max-w-sm text-center">
+                        <h2 className="text-xl mb-4">Claim 10 Tokens!</h2>
+                        <p className="mb-4">
                           You won and can claim 10 tokens to your wallet.
                         </p>
 
@@ -315,14 +187,7 @@ export default function RockPaperScissors() {
                             setShowModal(false);
                             setPrizeClaimed(true);
                           }}
-                          style={{
-                            padding: "0.5rem 1rem",
-                            background: "#28a745",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
+                          className="px-4 py-2 bg-green-600 text-white border-none rounded cursor-pointer"
                         >
                           Claim Prize
                         </TransactionButton>

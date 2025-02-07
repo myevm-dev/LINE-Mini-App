@@ -24,10 +24,8 @@ export default function RootLayout({
       const initializeLiff = async () => {
         try {
           await liff.init({ liffId: liffId });
-          console.log('LIFF initialized successfully!');
           setIsLiffReady(true); // Set state to indicate LIFF is ready
         } catch (error) {
-          console.error('LIFF initialization failed', error);
         }
       };
 
