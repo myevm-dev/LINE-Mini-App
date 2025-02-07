@@ -30,55 +30,35 @@ Checkout the Video Tutorial Here
 The first step is to create a Line Business ID account in order to log into the LINE Developer Console. This can be done with just an email. 
 
 1. Create a Line Business ID Account
-    1. 
-    
-    ![image.png](attachment:7bc9c61e-115d-46af-bf5c-a10094ad9ebd:image.png)
     
 2. Login to the LINE Developer Console with your Business ID 
-    1. 
-    
-    ![image.png](attachment:34b55c3c-cc83-487f-9fee-beb2a3a4b1ee:image.png)
     
 3. In the providers section click on Create 
-    1. 
-    
-    ![image.png](attachment:7ac2956a-5ed7-4a1c-8942-963c32b0b731:image.png)
     
 4. Name your Provider and click on Create 
-    1. 
+
     
-    ![image.png](attachment:543da1d8-23bc-4cde-8ae0-3d2e508490ba:image.png)
+# Step 2: Create a Line Mini App Channel
     
-    []()
-    
-    # Step 2: Create a Line Mini App Channel
-    
-    Now, let’s create a Line Mini App Channel that will act as your mini app! 
+Now, let’s create a Line Mini App Channel that will act as your mini app! 
     
 
 1. Once your Provider is created click on Create a LINE MINI App Channel 
 
-![image.png](attachment:05e96b1d-18cc-40c5-b582-805e320d9a62:image.png)
 
-1. Fill in any necessary information such as which region you would like this channel to be available in, profile info, channel name, etc. 
+2. Fill in any necessary information such as which region you would like this channel to be available in, profile info, channel name, etc. 
     
-    ![image.png](attachment:b3f771c0-9308-44f3-bd1a-ad3cfddbf257:image.png)
     
-2. Click on Create when done 
+3. Click on Create when done 
 
-![image.png](attachment:56e9be41-c729-47c1-95f6-00bf24a0b3e4:image.png)
 
-1. Once your MiniApp is created you will be shown a screen containing your mini apps information. The important info for development will be in the Web app settings tab. 
+4. Once your MiniApp is created you will be shown a screen containing your mini apps information. The important info for development will be in the Web app settings tab. 
 
     
-    ![image.png](attachment:2f5d74a0-8b85-4b02-bece-4ebf035d8f7e:image.png)
-    
+5. Is this section you will see a Basic Information. For developing it is important to take note of the following: 
 
-1. Is this section you will see a Basic Information. For developing it is important to take note of the following: 
 LIFF URL : This will be used to identify your mini-app. Pay special attention to the section after [line.me/](http://line.me/) as this is your LIFF ID.
 Endpoint URL : This is where your application will point to. Once you have your webapp running you can update this to point to your webapp
-    
-    ![image.png](attachment:dfc2c9d0-942c-4d9e-b5b8-a3069adb1ca5:image.png)
     
 
 # Step3: Set up the Next.js React Project
@@ -176,7 +156,6 @@ Now, we will configure our web app to be opened as a LINE mini app when opened t
         3. Copy the forwarding address provided (e.g. [`https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.io`](https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.io/?ref=blog.thirdweb.com))
         4. Head back to the LINE developer console and provide this address as the `Endpoint URL` in the Developing section
         
-        ![image.png](attachment:babc3364-07d9-426b-a6f5-08da2fdb17b5:image.png)
         
 
 # Step 4: Install and setup thirdweb
@@ -191,8 +170,8 @@ or
 yard add thirdweb 
 ```
 
-1. Create a `.env` file in the root directory and add your `process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID` (Provide a thirdweb client ID. Don't have one, learn how to create one [here](https://blog.thirdweb.com/guides/create-a-thirdweb-account/).)
-2. Add your `NEXT_PUBLIC_TEMPLATE_LINE_LIFF` in your `.env` file as well
+2. Create a `.env` file in the root directory and add your `process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID` (Provide a thirdweb client ID. Don't have one, learn how to create one [here](https://blog.thirdweb.com/guides/create-a-thirdweb-account/).)
+3. Add your `NEXT_PUBLIC_TEMPLATE_LINE_LIFF` in your `.env` file as well
 
 ## **Step 5: Add a Connect Wallet Button**
 
@@ -239,10 +218,10 @@ Now that we have our game set up to claim tokens, we need to create the token co
 
 [thirdweb: The complete web3 development platform](https://thirdweb.com/thirdweb.eth/DropERC20?ref=blog.thirdweb.com)
 
-1. Give your token a name (e.g. "Rock Paper Scissors Token"), symbol (e.g. "RPS"), and optional description and image.
-2. Scroll down and click "Deploy Now", confirm the gas, and sign the request to add the contract to your dashboard.
-3. Once deployed, click "View Contract" to go to the contract dashboard.
-4. Go to the "Claim Conditions" tab and set up a public claim where anyone can claim any amount of tokens.
+3. Give your token a name (e.g. "Rock Paper Scissors Token"), symbol (e.g. "RPS"), and optional description and image.
+4. Scroll down and click "Deploy Now", confirm the gas, and sign the request to add the contract to your dashboard.
+5. Once deployed, click "View Contract" to go to the contract dashboard.
+6. Go to the "Claim Conditions" tab and set up a public claim where anyone can claim any amount of tokens.
 
 <aside>
 💡
@@ -265,7 +244,7 @@ const contract = getContract({
 });
 ```
 
-1. Next we can create a `TransactionButton` to show when a user is allowed to claim a prize. This will execute the `claimTo` function from the contract and claim tokens to the user's wallet
+2. Next we can create a `TransactionButton` to show when a user is allowed to claim a prize. This will execute the `claimTo` function from the contract and claim tokens to the user's wallet
 
 ```tsx
 <TransactionButton
@@ -296,7 +275,7 @@ const { data: tokenbalance } = useReadContract(
 )
 ```
 
-1. Now we can display that balance in our game for the user to see
+2. Now we can display that balance in our game for the user to see
 
 ```tsx
 <p>Balance: {tokenBalance?.displayValue}</p>
