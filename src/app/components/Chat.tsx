@@ -22,10 +22,8 @@ export default function Chat() {
   async function send() {
     const t = input.trim();
     if (!t) return;
-    const id = crypto.randomUUID();
 
-    // Add your message immediately
-    setMsgs((m) => [...m, { id, who: "you", text: t }]);
+    setMsgs((m) => [...m, { id: crypto.randomUUID(), who: "you", text: t }]);
     setInput("");
     setLoading(true);
 
@@ -34,7 +32,6 @@ export default function Chat() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          // Send the whole conversation to the backend
           messages: [
             ...msgs.map((m) => ({
               role: m.who === "you" ? "user" : "assistant",
@@ -46,23 +43,26 @@ export default function Chat() {
       });
 
       const data = await res.json();
-      if (data.reply) {
-        setMsgs((m) => [
-          ...m,
-          { id: crypto.randomUUID(), who: "ai", text: data.reply },
-        ]);
-      } else {
-        setMsgs((m) => [
-          ...m,
-          { id: crypto.randomUUID(), who: "ai", text: "⚠️ No reply from AI." },
-        ]);
-      }
+      const reply = data.reply ?? "⚠️ No reply from AI.";
+
+      // 1) show the bubble
+      setMsgs((m) => [...m, { id: crypto.randomUUID(), who: "ai", text: reply }]);
+
+      // 2) now move mouth for a bit (after text is visible)
+      const ms = Math.max(800, Math.min(8000, reply.length * 45)); // 45ms/char, clamp
+      window.dispatchEvent(new CustomEvent("waifu:talk", { detail: { ms } }));
+
+      // optional: safety stop a tad after
+      window.setTimeout(() => {
+        window.dispatchEvent(new Event("waifu:talk-stop"));
+      }, ms + 150);
     } catch (err) {
       console.error(err);
       setMsgs((m) => [
         ...m,
         { id: crypto.randomUUID(), who: "ai", text: "⚠️ Error talking to AI." },
       ]);
+      window.dispatchEvent(new Event("waifu:talk-stop"));
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export default function Chat() {
           </div>
         ))}
         {loading && (
-          <div className="mr-auto bg-zinc-800 text-neutral-400 px-3 py-2 rounded-lg text-sm animate-pulse">
+          <div className="mr-auto bg-zinc-800 text-neutral-400 px-3 py-2 rounded-lg text-sm">
             Aiko is typing…
           </div>
         )}
