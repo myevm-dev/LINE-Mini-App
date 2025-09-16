@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
 	line-height: 1.5;
 	font-weight: 400;
@@ -15,6 +16,9 @@
 	font-variation-settings: 'slnt' 0;
 }
 
+html, body {
+	@apply w-full max-w-full overflow-x-hidden;
+	}
 @layer base {
 	body {
 		@apply bg-zinc-950 text-neutral-200;
