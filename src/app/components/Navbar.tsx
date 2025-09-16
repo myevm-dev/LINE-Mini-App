@@ -47,9 +47,9 @@ export default function Navbar() {
             <a href="#" className="text-sm text-neutral-300 hover:text-white">
               Chat
             </a>
-            <a href="#" className="text-sm text-neutral-300 hover:text-white">
+            <Link href="/store" className="text-sm text-neutral-300 hover:text-white">
               Store
-            </a>
+            </Link>
             <Link href="/topup" className="text-sm text-neutral-300 hover:text-white">
               Top Up
             </Link>
