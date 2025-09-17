@@ -1,3 +1,4 @@
+// src/app/store/create/CreateForm.tsx
 "use client";
 
 import type { PersonalitySpec } from "./PersonalityTypes";
@@ -7,9 +8,10 @@ type Props = {
   onChange: (next: PersonalitySpec) => void;
   onSaveDraft?: () => void;
   onPublish?: () => void;
+  busy?: boolean; // ✅ add this
 };
 
-export default function CreateForm({ spec, onChange, onSaveDraft, onPublish }: Props) {
+export default function CreateForm({ spec, onChange, onSaveDraft, onPublish, busy }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 lg:p-6">
       <div className="space-y-5">
@@ -81,11 +83,23 @@ export default function CreateForm({ spec, onChange, onSaveDraft, onPublish }: P
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={onSaveDraft} className="px-3 py-2 text-sm rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white">
+          <button
+            onClick={onSaveDraft}
+            disabled={busy}
+            className={`px-3 py-2 text-sm rounded-lg text-white ${
+              busy ? "bg-emerald-600/60 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700"
+            }`}
+          >
             Save Draft
           </button>
-          <button onClick={onPublish} className="px-3 py-2 text-sm rounded-lg bg-zinc-700 hover:bg-zinc-600 text-white">
-            Publish
+          <button
+            onClick={onPublish}
+            disabled={busy}
+            className={`px-3 py-2 text-sm rounded-lg text-white ${
+              busy ? "bg-zinc-700/60 cursor-not-allowed" : "bg-zinc-700 hover:bg-zinc-600"
+            }`}
+          >
+            {busy ? "Encrypting…" : "Encrypt & Publish"}
           </button>
         </div>
       </div>
