@@ -12,7 +12,6 @@ import { shortenAddress } from "thirdweb/utils";
 import { KAIA } from "../lib/kaia";
 import Link from "next/link";
 
-// --- AA config ---------------------------------------------------------------
 const FACTORY = "0x907617627547f5de2a403d68068261756f362338";
 
 const wallets = [
@@ -44,9 +43,10 @@ export default function Navbar() {
 
           {/* Menu */}
           <div className="flex items-center gap-4">
-            <a href="#" className="text-sm text-neutral-300 hover:text-white">
+            {/* ✅ Chat now links to the homepage */}
+            <Link href="/" className="text-sm text-neutral-300 hover:text-white">
               Chat
-            </a>
+            </Link>
             <Link href="/store" className="text-sm text-neutral-300 hover:text-white">
               Store
             </Link>

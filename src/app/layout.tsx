@@ -1,4 +1,4 @@
-"use client"; // MARK THIS AS A CLIENT COMPONENT
+"use client"; 
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
