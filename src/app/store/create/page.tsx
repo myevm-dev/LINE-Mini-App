@@ -22,7 +22,7 @@ export default function StoreCreatePage() {
               {tab === "personalities" ? "Create Personality" : "Create Model"}
             </h1>
             <p className="text-sm text-neutral-400">
-              Standardize personality details for JSON storage & in-app licensing.
+              Create a standardized personality details for encrypted storage in-app licensing.
             </p>
           </div>
 
