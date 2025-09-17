@@ -3,9 +3,8 @@
 import { useMemo, useState } from "react";
 import { useCredits } from "../components/useCredits";
 import StoreCard, { StoreItem } from "../components/StoreCard";
-import Link from "next/link";
 
-type Tab = "personalities" | "clothes" | "models";
+type Tab = "personalities" | "models" | "clothes";
 
 const ITEMS: StoreItem[] = [
   // Personalities
@@ -15,7 +14,7 @@ const ITEMS: StoreItem[] = [
     name: "Tsundere",
     desc: "Spiky at first, secretly sweet.",
     price: 600,
-    img: "/store/personalities/tsundere.png", // optional; place files in /public
+    img: "/store/personalities/tsundere.png",
     badge: "NEW",
   },
   {
@@ -86,21 +85,21 @@ const ITEMS: StoreItem[] = [
   },
 ];
 
-
 export default function StorePage() {
   const [tab, setTab] = useState<Tab>("personalities");
-  const { credits, setCredits } = useCredits();
+  const { credits, fetchCredits } = useCredits();
 
   const filtered = useMemo(() => {
     if (tab === "personalities") return ITEMS.filter(i => i.kind === "personality");
-    if (tab === "clothes") return ITEMS.filter(i => i.kind === "clothes");
-    return ITEMS.filter(i => i.kind === "model");
+    if (tab === "models") return ITEMS.filter(i => i.kind === "model");
+    return ITEMS.filter(i => i.kind === "clothes");
   }, [tab]);
 
   const onBuy = (item: StoreItem) => {
     if (credits < item.price) return alert("Not enough credits.");
-    setCredits(credits - item.price);
     alert(`Purchased: ${item.name}`);
+    // optionally refresh credits from chain:
+    // fetchCredits(address);
   };
 
   return (
@@ -111,7 +110,7 @@ export default function StorePage() {
           <div>
             <h1 className="text-2xl font-bold text-white">Store</h1>
             <p className="text-sm text-neutral-400">
-              Buy personalities, clothes, and models for your waifu.
+              Buy personalities, models, and clothes for your waifu.
             </p>
           </div>
           <div className="text-right">
@@ -138,16 +137,6 @@ export default function StorePage() {
               Personalities
             </button>
             <button
-              onClick={() => setTab("clothes")}
-              className={`px-4 py-2 text-sm border-l border-zinc-800 ${
-                tab === "clothes"
-                  ? "bg-zinc-800 text-white"
-                  : "bg-zinc-900 text-neutral-300 hover:text-white"
-              }`}
-            >
-              Clothes
-            </button>
-            <button
               onClick={() => setTab("models")}
               className={`px-4 py-2 text-sm border-l border-zinc-800 ${
                 tab === "models"
@@ -156,6 +145,16 @@ export default function StorePage() {
               }`}
             >
               Models
+            </button>
+            <button
+              onClick={() => setTab("clothes")}
+              className={`px-4 py-2 text-sm border-l border-zinc-800 ${
+                tab === "clothes"
+                  ? "bg-zinc-800 text-white"
+                  : "bg-zinc-900 text-neutral-300 hover:text-white"
+              }`}
+            >
+              Clothes
             </button>
           </div>
 
@@ -167,7 +166,6 @@ export default function StorePage() {
             <button className="px-3 py-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white">
               Create
             </button>
-
           </div>
         </div>
 

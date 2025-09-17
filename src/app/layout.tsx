@@ -1,34 +1,34 @@
 "use client"; // MARK THIS AS A CLIENT COMPONENT
 
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { ThirdwebProvider } from 'thirdweb/react';
-import liff from '@line/liff'; // DIRECT IMPORT of liff
-import { useEffect, useState } from 'react'; // Import useEffect
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThirdwebProvider } from "thirdweb/react";
+import liff from "@line/liff";
+import { useEffect, useState } from "react";
 
-const inter = Inter({ subsets: ['latin'] });
+import Navbar from "./components/Navbar"; // ✅ import Navbar once here
 
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isLiffReady, setIsLiffReady] = useState(false); // Track LIFF readiness
-  const liffId = process.env.NEXT_PUBLIC_TEMPLATE_LINE_LIFF!; //USE YOUR LIFF ID
+  const [isLiffReady, setIsLiffReady] = useState(false);
+  const liffId = process.env.NEXT_PUBLIC_TEMPLATE_LINE_LIFF!;
 
   useEffect(() => {
-    // Only initialize LIFF on the client-side
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const initializeLiff = async () => {
         try {
-          await liff.init({ liffId: liffId });
-          setIsLiffReady(true); // Set state to indicate LIFF is ready
+          await liff.init({ liffId });
+          setIsLiffReady(true);
         } catch (error) {
+          console.error("LIFF init failed", error);
         }
       };
-
       initializeLiff();
     }
   }, [liffId]);
@@ -37,9 +37,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {isLiffReady ? (
-          <ThirdwebProvider>{children}</ThirdwebProvider>
+          <ThirdwebProvider>
+            {/* ✅ Navbar is now global */}
+            <Navbar />  
+            {children}
+          </ThirdwebProvider>
         ) : (
-          <div>Loading LIFF...</div> // Or a better loading indicator
+          <div>Loading LIFF...</div>
         )}
       </body>
     </html>
