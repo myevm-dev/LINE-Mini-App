@@ -193,7 +193,7 @@ export default function Player() {
     };
 
     loader.load(
-      "/339723365297561291.vrm",
+      "/aiko.vrm",
       (gltf: GLTF) => {
         if (disposed) return;
         vrm = (gltf.userData as any).vrm as VRM;
