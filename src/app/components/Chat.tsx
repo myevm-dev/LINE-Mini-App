@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useActiveAccount, useSendTransaction } from "thirdweb/react";
+import { getContract, prepareContractCall } from "thirdweb";
+
+import { client } from "../client";
+import { KAIA } from "../lib/kaia";
+import { ADDRESSES } from "../lib/constants";
 
 type Msg = { id: string; who: "you" | "ai"; text: string };
 
@@ -11,6 +17,16 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scroller = useRef<HTMLDivElement | null>(null);
+
+  const account = useActiveAccount();
+  const { mutateAsync: sendTx } = useSendTransaction();
+
+  // WaifuTopUp contract
+  const waifu = getContract({
+    client,
+    chain: KAIA,
+    address: ADDRESSES.WAIFU_TOP_UP,
+  });
 
   useEffect(() => {
     scroller.current?.scrollTo({
@@ -23,11 +39,13 @@ export default function Chat() {
     const t = input.trim();
     if (!t) return;
 
+    // show user bubble immediately
     setMsgs((m) => [...m, { id: crypto.randomUUID(), who: "you", text: t }]);
     setInput("");
     setLoading(true);
 
     try {
+      // 1) ask Anthropic
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,14 +63,41 @@ export default function Chat() {
       const data = await res.json();
       const reply = data.reply ?? "⚠️ No reply from AI.";
 
-      // 1) show the bubble
+      if (!reply || reply === "⚠️ No reply from AI.") {
+        setMsgs((m) => [
+          ...m,
+          { id: crypto.randomUUID(), who: "ai", text: "⚠️ No reply from AI." },
+        ]);
+        return;
+      }
+
+      // 2) charge credits on-chain *before showing reply*
+      if (account?.address) {
+        try {
+          await sendTx(
+            prepareContractCall({
+              contract: waifu,
+              method: "function message()",
+              params: [],
+            })
+          );
+          console.log("✅ message() charged on-chain");
+        } catch (err) {
+          console.error("⚠️ On-chain message() failed", err);
+          setMsgs((m) => [
+            ...m,
+            { id: crypto.randomUUID(), who: "ai", text: "⚠️ Transaction failed." },
+          ]);
+          return;
+        }
+      }
+
+      // 3) only now show reply bubble
       setMsgs((m) => [...m, { id: crypto.randomUUID(), who: "ai", text: reply }]);
 
-      // 2) now move mouth for a bit (after text is visible)
-      const ms = Math.max(800, Math.min(8000, reply.length * 45)); // 45ms/char, clamp
+      // 4) animate mouth
+      const ms = Math.max(800, Math.min(8000, reply.length * 45));
       window.dispatchEvent(new CustomEvent("waifu:talk", { detail: { ms } }));
-
-      // optional: safety stop a tad after
       window.setTimeout(() => {
         window.dispatchEvent(new Event("waifu:talk-stop"));
       }, ms + 150);
