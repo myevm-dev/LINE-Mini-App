@@ -56,9 +56,7 @@ function randIV(n = 12) {
 }
 async function aesEncryptText(plain: string, key: CryptoKey) {
   const iv = randIV();
-  const ct = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encStr(plain || ""))
-  );
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encStr(plain || "")));
   return { ivB64: b64(iv), cipherB64: b64(ct) };
 }
 
@@ -81,6 +79,13 @@ async function pinFile(blob: Blob, name: string) {
   if (!r.ok) throw new Error("pin file failed");
   const j = await r.json();
   return j.cid as string;
+}
+
+async function exportAesRawB64(key: CryptoKey) {
+  const raw = new Uint8Array(await crypto.subtle.exportKey("raw", key));
+  let s = "";
+  for (let i = 0; i < raw.length; i++) s += String.fromCharCode(raw[i]);
+  return btoa(s);
 }
 
 /* ----------------- page ----------------- */
@@ -109,27 +114,43 @@ export default function StoreCreatePage() {
       };
       const encCid = await pinJSON(encPayload);
 
-      // 2) blockies image from PUBLIC traits
+      // 1b) export raw AES key and wrap with server master
+      const keyB64 = await exportAesRawB64(key);
+      const wrapRes = await fetch("/api/keys/wrap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keyB64 }),
+      });
+      if (!wrapRes.ok) throw new Error("wrap failed");
+      const { wrappedKeyB64, wrapAlgo, keyVersion } = await wrapRes.json();
+
+      // 2) generate blockies image from PUBLIC traits
       const pub = publicFromSpec(spec);
       const seed = JSON.stringify(pub, Object.keys(pub).sort());
       const mod = (await import("ethereum-blockies")) as any;
       const blockies = mod.default ?? mod;
       const icon: HTMLCanvasElement = blockies.create({ seed, size: 16, scale: 16 });
       const imageBlob: Blob = await new Promise((res) =>
-        icon.toBlob((b) => res(b as Blob), "image/png")
+        icon.toBlob((b) => res(b as Blob), "image/png"),
       );
       const imageCid = await pinFile(imageBlob, "personality.png");
 
-      // 3) build metadata
+      // 3) build metadata (includes wrappedKey)
       const metadata = {
         description: "Premium Personality: public traits. Opener & notes encrypted.",
         image: ipfsUri(imageCid),
         attributes: buildAttributes(pub),
-        encrypted: { cid: encCid, algo: "AES-GCM-256" },
+        encrypted: {
+          cid: encCid, // ciphertext JSON on IPFS
+          algo: "AES-GCM-256",
+          wrappedKey: wrappedKeyB64, // safe to publish
+          wrapAlgo,
+          keyVersion,
+        },
       };
       const metadataCid = await pinJSON(metadata);
 
-      // Return nice URLs for confirmation
+      // 4) confirm URLs
       const msg =
         `✅ Published!\n\n` +
         `Metadata (ipfs): ${ipfsUri(metadataCid)}\n` +
@@ -140,19 +161,7 @@ export default function StoreCreatePage() {
         `Encrypted JSON (https): ${gw(encCid)}`;
       alert(msg);
 
-      console.log({
-        metadataCid,
-        metadataIpfs: ipfsUri(metadataCid),
-        metadataHttps: gw(metadataCid),
-        imageCid,
-        imageIpfs: ipfsUri(imageCid),
-        imageHttps: gw(imageCid),
-        encCid,
-        encIpfs: ipfsUri(encCid),
-        encHttps: gw(encCid),
-      });
-
-      // Next: mint with tokenURI = ipfs://{metadataCid}
+      console.log({ metadataCid, imageCid, encCid });
     } catch (e) {
       console.error(e);
       alert("Encrypt & Publish failed");
