@@ -1,25 +1,41 @@
-"use client";
-
-import { useEffect, useState, useCallback } from "react";
-
-const KEY = "pw_credits_v1";
+// src/app/components/useCredits.ts
+import { useState, useEffect } from "react";
+import { readContract } from "thirdweb";
+import { client } from "../client";
+import { KAIA } from "../lib/kaia";
+import { ADDRESSES } from "../lib/constants";
 
 export function useCredits() {
   const [credits, setCredits] = useState<number>(0);
 
-  useEffect(() => {
+  async function fetchCredits(address?: string) {
+    if (!address) return;
+
+    console.log("Refetching credits...");
+
     try {
-      const raw = localStorage.getItem(KEY);
-      setCredits(raw ? Math.max(0, parseInt(raw, 10) || 0) : 0);
-    } catch {}
+      const result = await readContract({
+        contract: {
+          client,
+          chain: KAIA,
+          address: ADDRESSES.WAIFU_TOP_UP,
+        },
+        method: "function balanceOf(address) view returns (uint256)",
+        params: [address],
+      });
+
+      const newBalance = Number(result);
+      console.log("New balance", newBalance);
+      setCredits(newBalance);
+    } catch (err) {
+      console.error("Failed to fetch credits:", err);
+    }
+  }
+
+  useEffect(() => {
+    // grab connected wallet automatically if you want
+    // or leave fetchCredits(address) for manual refresh
   }, []);
 
-  const set = useCallback((val: number) => {
-    setCredits(val);
-    try { localStorage.setItem(KEY, String(Math.max(0, Math.floor(val)))); } catch {}
-  }, []);
-
-  const add = useCallback((delta: number) => set(credits + delta), [credits, set]);
-
-  return { credits, setCredits: set, addCredits: add };
+  return { credits, fetchCredits };
 }
