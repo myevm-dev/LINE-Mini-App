@@ -16,7 +16,7 @@ import { KAIA } from "../lib/kaia";
 import { ADDRESSES } from "../lib/constants";
 import StoreCard, { StoreItem } from "../components/StoreCard";
 
-type Tab = "personalities" | "models" | "clothes";
+type Tab = "personalities" | "models";
 
 const USDT_DECIMALS = 6;
 
@@ -26,11 +26,6 @@ const ITEMS: StoreItem[] = [
   { id: "p2", kind: "personality", name: "Yandere", desc: "Protective… a little too protective.", price: 700, img: "/store/personalities/yandere.png" },
   { id: "p3", kind: "personality", name: "Onee-san", desc: "Calm, kind, and teasing.", price: 650 },
 
-
-  // Clothes
-  { id: "c1", kind: "clothes", name: "Casual Hoodie", desc: "Comfy street style.", price: 400, img: "/store/clothes/hoodie.png" },
-  { id: "c2", kind: "clothes", name: "Maid Dress", desc: "Classic black & white.", price: 800, img: "/store/clothes/maid.png" },
-  { id: "c3", kind: "clothes", name: "Cyber Bodysuit", desc: "Sleek future fit.", price: 900, img: "/store/clothes/cyber.png" },
 
 
   // Models
@@ -62,11 +57,16 @@ export default function StorePage() {
     address: account?.address ?? "0x0000000000000000000000000000000000000000",
   });
 
-  const filtered = useMemo(() => {
-    if (tab === "personalities") return ITEMS.filter(i => i.kind === "personality");
-    if (tab === "models") return ITEMS.filter(i => i.kind === "model");
-    return ITEMS.filter(i => i.kind === "clothes");
+  const filtered = useMemo<StoreItem[]>(() => {
+    if (tab === "personalities") {
+      return ITEMS.filter(i => i.kind === "personality");
+    }
+    if (tab === "models") {
+      return ITEMS.filter(i => i.kind === "model");
+    }
+    return [];
   }, [tab]);
+
 
   const onBuy = (item: StoreItem) => {
     alert(`Purchased: ${item.name}`);
@@ -86,7 +86,7 @@ export default function StorePage() {
           <div>
             <h1 className="text-2xl font-bold text-white">Store</h1>
             <p className="text-sm text-neutral-400">
-              Buy personalities, models, and clothes for your waifu.
+              Create your Waifu by purchasing Personalites or Models.
             </p>
           </div>
           <div className="text-right text-sm text-neutral-400 space-y-1">
@@ -119,16 +119,7 @@ export default function StorePage() {
               Personalities
             </button>
 
-            <button
-              onClick={() => setTab("clothes")}
-              className={`px-4 py-2 text-sm border-l border-zinc-800 ${
-                tab === "clothes"
-                  ? "bg-zinc-800 text-white"
-                  : "bg-zinc-900 text-neutral-300 hover:text-white"
-              }`}
-            >
-              Clothes
-            </button>
+            
           </div>
 
           <div className="flex gap-2">
